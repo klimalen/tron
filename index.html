@@ -5,917 +5,751 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bounce Beat — Tron</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 body {
-background: #0a0e2e;
+background: #060818;
 overflow: hidden;
 width: 100vw;
 height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
 touch-action: none;
 user-select: none;
+font-family: 'Courier New', monospace;
 }
 
 canvas {
+position: fixed;
+top: 0; left: 0;
+width: 100%;
+height: 100%;
 display: block;
-cursor: pointer;
 }
 
-/* ---- UI поверх canvas ---- */
+/* ── UI ── */
 #ui {
 position: fixed;
 top: 0; left: 0;
 width: 100%;
+padding: 16px 20px;
 display: flex;
 justify-content: space-between;
-padding: 14px 20px;
+align-items: flex-start;
+z-index: 10;
 pointer-events: none;
-z-index: 20;
 }
 
 #score {
-font: 900 clamp(20px,5vw,32px)/1 'Courier New', monospace;
+font-size: clamp(20px, 5vw, 34px);
+font-weight: 900;
 color: #00f0ff;
 text-shadow: 0 0 8px #00f0ff, 0 0 20px #00f0ff;
 letter-spacing: 3px;
 }
 
 #combo {
-font: 700 clamp(14px,3.5vw,22px)/1 'Courier New', monospace;
+font-size: clamp(13px, 3.5vw, 22px);
+font-weight: 700;
 color: #ff9900;
 text-shadow: 0 0 8px #ff9900;
+transition: opacity .2s;
 opacity: 0;
-transition: opacity .25s;
 }
-#combo.show { opacity: 1; }
+#combo.on { opacity: 1; }
 
-/* ---- Стартовый экран ---- */
+/* ── Стартовый экран ── */
 #startScreen {
 position: fixed;
 inset: 0;
-background: rgba(5, 8, 30, 0.93);
+background: rgba(4, 6, 20, 0.95);
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-gap: 18px;
-z-index: 100;
+gap: 20px;
+z-index: 50;
 }
 
 #startScreen h1 {
-font: 900 clamp(36px,9vw,72px)/1 'Courier New', monospace;
+font-size: clamp(38px, 9vw, 72px);
+font-weight: 900;
 color: #00f0ff;
-text-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff, 0 0 80px #0055ff;
 letter-spacing: 6px;
-animation: glow 1.8s ease-in-out infinite alternate;
+text-shadow: 0 0 16px #00f0ff, 0 0 40px #00f0ff, 0 0 80px #0066ff;
+animation: glow 2s ease-in-out infinite alternate;
 }
 
 #startScreen p {
-font: 400 clamp(13px,3vw,18px)/1.7 'Courier New', monospace;
-color: rgba(0,240,255,0.7);
+font-size: clamp(13px, 3vw, 18px);
+color: rgba(0,240,255,0.72);
 text-align: center;
-padding: 0 24px;
+line-height: 1.8;
 letter-spacing: 1px;
+padding: 0 24px;
 }
 
-.tron-btn {
-margin-top: 8px;
-padding: 14px 48px;
+.btn {
+padding: 14px 52px;
 font: 900 clamp(15px,3.5vw,20px)/1 'Courier New', monospace;
 letter-spacing: 4px;
-color: #0a0e2e;
+color: #060818;
 background: #00f0ff;
 border: none;
 border-radius: 4px;
 cursor: pointer;
-box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+box-shadow: 0 0 24px #00f0ff, 0 0 50px #00f0ff;
 transition: transform .15s, box-shadow .15s;
 pointer-events: auto;
 }
-.tron-btn:hover { transform: scale(1.06); box-shadow: 0 0 35px #00f0ff, 0 0 60px #00f0ff; }
-.tron-btn:active { transform: scale(0.96); }
+.btn:hover { transform: scale(1.06); box-shadow: 0 0 40px #00f0ff, 0 0 80px #00f0ff; }
+.btn:active { transform: scale(.95); }
 
-/* ---- Game Over ---- */
-#gameOver {
+/* ── Game Over ── */
+#dieScreen {
 position: fixed;
 inset: 0;
-background: rgba(5, 8, 30, 0.92);
+background: rgba(4, 6, 20, 0.93);
 display: none;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-gap: 14px;
-z-index: 100;
+gap: 16px;
+z-index: 50;
 }
-
-#gameOver h2 {
-font: 900 clamp(30px,8vw,60px)/1 'Courier New', monospace;
+#dieScreen h2 {
+font-size: clamp(32px, 8vw, 64px);
+font-weight: 900;
 color: #ff003c;
-text-shadow: 0 0 20px #ff003c, 0 0 50px #ff003c;
 letter-spacing: 4px;
+text-shadow: 0 0 18px #ff003c, 0 0 50px #ff003c;
 }
-
-#finalScore, #bestScore {
-font: 700 clamp(16px,4vw,26px)/1 'Courier New', monospace;
+.stat {
+font-size: clamp(16px,4vw,26px);
+font-weight: 700;
+letter-spacing: 2px;
 color: #00f0ff;
 text-shadow: 0 0 8px #00f0ff;
-letter-spacing: 2px;
 }
-
-#bestScore { color: #ff9900; text-shadow: 0 0 8px #ff9900; }
+.stat.best { color:#ff9900; text-shadow:0 0 8px #ff9900; }
 
 @keyframes glow {
-from { text-shadow: 0 0 10px #00f0ff, 0 0 30px #00f0ff; }
-to { text-shadow: 0 0 25px #00f0ff, 0 0 60px #00f0ff, 0 0 100px #0055ff; }
+from { text-shadow: 0 0 12px #00f0ff, 0 0 30px #00f0ff; }
+to { text-shadow: 0 0 28px #00f0ff, 0 0 70px #00f0ff, 0 0 120px #0055ff; }
 }
 </style>
 </head>
 <body>
 
-<div id="ui">
-<div id="score">0</div>
-<div id="combo" id="combo"></div>
-</div>
-
 <canvas id="c"></canvas>
 
-<div id="startScreen">
-<h1>BOUNCE BEAT</h1>
-<p>Перепрыгивай линии в ритм музыки<br>
-<span style="color:#ff9900">КЛИК / ПРОБЕЛ / ТАП</span> — прыжок<br>
-<span style="color:#cc00ff">ДВОЙНОЙ КЛИК В ВОЗДУХЕ</span> — импульс</p>
-<button class="tron-btn" id="startBtn">СТАРТ</button>
+<div id="ui">
+<div id="score">0</div>
+<div id="combo"></div>
 </div>
 
-<div id="gameOver">
+<div id="startScreen">
+<h1>BOUNCE<br>BEAT</h1>
+<p>
+Перепрыгивай линии в ритм<br>
+<span style="color:#ff9900">КЛИК / ПРОБЕЛ / ТАП</span> — прыжок<br>
+<span style="color:#cc33ff">ЕЩЁ РАЗ В ВОЗДУХЕ</span> — двойной прыжок
+</p>
+<button class="btn" id="btnStart">СТАРТ</button>
+</div>
+
+<div id="dieScreen">
 <h2>GAME OVER</h2>
-<div id="finalScore"></div>
-<div id="bestScore"></div>
-<button class="tron-btn" id="restartBtn">СНОВА</button>
+<div class="stat" id="statScore"></div>
+<div class="stat best" id="statBest"></div>
+<button class="btn" id="btnRestart">СНОВА</button>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// CANVAS & РАЗМЕРЫ
-// ═══════════════════════════════════════════════════════
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
+// ─────────────────────────────────────────────────────────────
+// CANVAS
+// ─────────────────────────────────────────────────────────────
+const CV = document.getElementById('c');
+const CTX = CV.getContext('2d');
 
-let W, H;
-// Игровые пропорции: высота земли, радиус шара
-let GROUND_Y; // Y верхней грани земли
-let BALL_R; // радиус шара
-let BALL_X; // фиксированный X шара
+let W = 0, H = 0;
+// Игровые координаты (пересчитываются при resize)
+let GY; // Y верхней грани земли
+let BR; // радиус шарика
+let BX; // X шарика (фиксированный)
+let GR; // сила гравитации
+let JV; // начальная скорость прыжка (отрицательная)
+let DV; // скорость double-jump
+let SPD; // скорость движения земли px/frame
 
-function resize() {
-W = canvas.width = window.innerWidth;
-H = canvas.height = window.innerHeight;
+function onResize() {
+W = CV.width = window.innerWidth;
+H = CV.height = window.innerHeight;
+GY = H * 0.80;
+BR = Math.max(14, Math.min(W, H) * 0.07);
+BX = W * 0.28;
+GR = H * 0.0014;
+JV = -(H * 0.022);
+DV = -(H * 0.016);
+SPD = W * 0.007 * spd;
 
-GROUND_Y = Math.round(H * 0.82); // земля занимает нижние ~18%
-BALL_R = Math.round(Math.min(W, H) * 0.075);
-BALL_X = Math.round(W * 0.30);
-
-// пересчитать физику
-GRAVITY = H * 0.0014;
-JUMP_VY = -(H * 0.022);
-DJUMP_VY = -(H * 0.016);
-GROUND_SPEED = W * 0.007 * gameSpeed;
+// Перестроить плитки пола при смене размера
+buildFloor();
 }
+window.addEventListener('resize', onResize);
 
-window.addEventListener('resize', () => { resize(); generateFloorTiles(); });
+// ─────────────────────────────────────────────────────────────
+// ГЛОБАЛЬНОЕ СОСТОЯНИЕ
+// ─────────────────────────────────────────────────────────────
+// Режимы: 'menu' | 'play' | 'dead'
+let MODE = 'menu';
 
-// ═══════════════════════════════════════════════════════
-// ФИЗИКА
-// ═══════════════════════════════════════════════════════
-let GRAVITY, JUMP_VY, DJUMP_VY, GROUND_SPEED;
-
-// ═══════════════════════════════════════════════════════
-// ЦВЕТА (TRON-палитра)
-// ═══════════════════════════════════════════════════════
-const BG_COLOR = '#0a0e2e';
-const GROUND_COLOR = '#000000';
-const BALL_COLOR = '#cc33ff'; // фиолетовый — как в референсе
-const LINE_COLORS = ['#00f0ff','#ff9900','#ff003c','#00ff88','#cc33ff','#ffffff'];
-
-// Набор цветов фона (тёмные, насыщенные)
-const BG_COLORS = [
-'#0a0e2e','#0d1033','#10052a','#050a20','#071530',
-'#0e1040','#130530','#0a1535','#060d28','#080520',
-'#001020','#000f1f','#020718','#0c0228','#15052e',
-'#1a0a00','#150800','#0f0000','#1a0000','#200010'
-];
-
-// ═══════════════════════════════════════════════════════
-// СОСТОЯНИЕ ИГРЫ
-// ═══════════════════════════════════════════════════════
-let gameState = 'start'; // 'start' | 'play' | 'dead'
-let score = 0;
-let bestScore = 0;
-let combo = 0;
-let gameSpeed = 1;
-let speedTimer = 0;
+let score = 0, best = 0, combo = 0;
+let spd = 1; // множитель скорости
+let spdTm = 0; // таймер разгона
+let obsInt = 0; // интервал появления препятствий (мс)
+let nextObs = 0; // timestamp следующего препятствия
 
 // Шарик
-let ball = { y: 0, vy: 0, onGround: true, canDJump: false };
+let by = 0, bvy = 0, bOnGround = true, bCanDJ = false;
 
-// Препятствия
-let obstacles = [];
-let floorTiles = []; // декоративные полосы на земле
-let particles = [];
+// Объекты
+let obs = []; // препятствия
+let parts = []; // частицы
+let floor = []; // декоративные вертикальные черты
 
 // Скролл
-let floorOffset = 0;
+let flOff = 0; // смещение пола
+
+// Фон
+const BG_BASE = '#060e24';
+let bgCur = BG_BASE, bgTgt = BG_BASE, bgT = 1;
+
+const BG_COLORS = [
+'#060e24','#080f1f','#05101a','#080520','#06101c',
+'#0a0420','#06080f','#0f0520','#030a18','#070316',
+'#0a1228','#050c22','#060215','#090e20','#040812'
+];
+
+const NEON = ['#00f0ff','#ff9900','#ff003c','#00ff88','#cc33ff','#ffee00'];
 
 // BPM
 const BPM = 120;
 const BEAT_MS = 60000 / BPM;
-let nextObsTime = 0;
-let obsInterval = BEAT_MS * 2;
-
-// Фон
-let currentBg = BG_COLORS[0];
-let targetBg = BG_COLORS[0];
-let bgT = 1;
 
 // rAF
-let rafId = null;
-let lastTs = 0;
+let rafId = 0;
+let prevTs = 0;
 
-// Audio
-let audioCtx = null;
-let masterGain = null;
-let nextBeat = 0;
-let beatLoopId = null;
-
-// ═══════════════════════════════════════════════════════
-// ГЕНЕРАЦИЯ ПЛИТОК ПОЛА
-// ═══════════════════════════════════════════════════════
-function generateFloorTiles() {
-floorTiles = [];
-const tileW = Math.round(W / 8);
-for (let i = 0; i < 20; i++) {
-floorTiles.push({
-relX : i * tileW + Math.random() * tileW * 0.5,
-color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
-w : 2 + Math.random() * 2,
+// ─────────────────────────────────────────────────────────────
+// ПОЛ — ДЕКОРАТИВНЫЕ ПОЛОСЫ
+// ─────────────────────────────────────────────────────────────
+function buildFloor() {
+floor = [];
+const count = 24;
+for (let i = 0; i < count; i++) {
+floor.push({
+rx : i * (W * 2 / count) + Math.random() * 30, // относительный X
+color: NEON[Math.floor(Math.random() * NEON.length)],
+w : 1.5 + Math.random() * 2
 });
 }
 }
 
-// ═══════════════════════════════════════════════════════
-// АУДИО (Web Audio — синтетика)
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
+// АУДИО
+// ─────────────────────────────────────────────────────────────
+let AC = null, MG = null, nextBeat = 0, beatTmr = null, bassI = 0;
+
 function initAudio() {
-if (audioCtx) return;
-audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-masterGain = audioCtx.createGain();
-masterGain.gain.value = 0.35;
-masterGain.connect(audioCtx.destination);
+if (AC) return;
+AC = new (window.AudioContext || window.webkitAudioContext)();
+MG = AC.createGain(); MG.gain.value = 0.35; MG.connect(AC.destination);
 }
 
-function startBeatLoop() {
-if (!audioCtx) return;
-nextBeat = audioCtx.currentTime + 0.1;
-scheduleBeat();
+function startMusic() {
+if (!AC) return;
+bassI = 0;
+nextBeat = AC.currentTime + 0.05;
+beatTick();
 }
 
-function scheduleBeat() {
-if (gameState !== 'play') return;
-const sec = BEAT_MS / 1000;
-while (nextBeat < audioCtx.currentTime + 0.6) {
-const t = nextBeat;
-playKick(t);
-playBass(t);
-const idx = Math.round(t / sec);
-if (idx % 2 === 1) playSnare(t);
-playHihat(t);
-nextBeat += sec;
-}
-beatLoopId = setTimeout(scheduleBeat, 150);
+function stopMusic() {
+if (beatTmr) { clearTimeout(beatTmr); beatTmr = null; }
 }
 
-function stopBeatLoop() {
-if (beatLoopId) clearTimeout(beatLoopId);
-beatLoopId = null;
+function beatTick() {
+if (MODE !== 'play') return;
+while (nextBeat < AC.currentTime + 0.5) {
+kick(nextBeat);
+bass(nextBeat);
+const bi = Math.round(nextBeat / (BEAT_MS/1000));
+if (bi % 2 === 1) snare(nextBeat);
+hihat(nextBeat);
+nextBeat += BEAT_MS / 1000;
+}
+beatTmr = setTimeout(beatTick, 150);
 }
 
-function playKick(t) {
-const o = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-o.connect(g); g.connect(masterGain);
-o.frequency.setValueAtTime(160, t);
-o.frequency.exponentialRampToValueAtTime(0.001, t + 0.4);
-g.gain.setValueAtTime(1, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-o.start(t); o.stop(t + 0.4);
+function osc(type, freq, gainVal, t, dur) {
+const o = AC.createOscillator(), g = AC.createGain();
+o.type = type; o.frequency.value = freq;
+o.connect(g); g.connect(MG);
+g.gain.setValueAtTime(gainVal, t);
+g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+o.start(t); o.stop(t + dur + 0.01);
 }
 
-function playSnare(t) {
-const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
-const data = buf.getChannelData(0);
-for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-const s = audioCtx.createBufferSource();
-const f = audioCtx.createBiquadFilter();
-const g = audioCtx.createGain();
-f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = 0.7;
-s.buffer = buf;
-s.connect(f); f.connect(g); g.connect(masterGain);
-g.gain.setValueAtTime(0.28, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-s.start(t); s.stop(t + 0.12);
+function noise(gainVal, t, dur, bpFreq) {
+const len = Math.ceil(AC.sampleRate * dur);
+const buf = AC.createBuffer(1, len, AC.sampleRate);
+const d = buf.getChannelData(0);
+for (let i=0;i<len;i++) d[i]=Math.random()*2-1;
+const s = AC.createBufferSource(), f=AC.createBiquadFilter(), g=AC.createGain();
+f.type='bandpass'; f.frequency.value=bpFreq; f.Q.value=0.8;
+s.buffer=buf; s.connect(f); f.connect(g); g.connect(MG);
+g.gain.setValueAtTime(gainVal,t);
+g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+s.start(t); s.stop(t+dur+0.01);
 }
 
-function playHihat(t) {
-const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
-const data = buf.getChannelData(0);
-for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-const s = audioCtx.createBufferSource();
-const f = audioCtx.createBiquadFilter();
-const g = audioCtx.createGain();
-f.type = 'highpass'; f.frequency.value = 9000;
-s.buffer = buf;
-s.connect(f); f.connect(g); g.connect(masterGain);
-g.gain.setValueAtTime(0.1, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
-s.start(t); s.stop(t + 0.05);
-}
+function kick(t) { osc('sine','155',1,t,0.4); }
+function snare(t) { noise(0.28,t,0.13,1800); }
+function hihat(t) { noise(0.09,t,0.04,9000); }
 
-const bassNotes = [55,55,73.4,55,65.4,55,82.4,55];
-let bassIdx = 0;
-function playBass(t) {
-const freq = bassNotes[bassIdx % bassNotes.length]; bassIdx++;
-const o = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-o.type = 'sawtooth';
-o.connect(g); g.connect(masterGain);
-o.frequency.value = freq;
-g.gain.setValueAtTime(0.22, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-o.start(t); o.stop(t + 0.3);
+const BASS_NOTES = [55,55,73.4,55,65.4,55,82.4,55];
+function bass(t) {
+osc('sawtooth', BASS_NOTES[bassI % BASS_NOTES.length], 0.20, t, 0.28);
+bassI++;
 }
 
 function sfxJump() {
-if (!audioCtx) return;
-const o = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-o.type = 'sine';
-o.connect(g); g.connect(masterGain);
-const t = audioCtx.currentTime;
-o.frequency.setValueAtTime(280, t);
-o.frequency.exponentialRampToValueAtTime(560, t + 0.08);
-g.gain.setValueAtTime(0.18, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-o.start(t); o.stop(t + 0.12);
+if (!AC) return;
+const t = AC.currentTime;
+osc('sine',280,0.18,t,0.01);
+const o=AC.createOscillator(),g=AC.createGain();
+o.type='sine'; o.connect(g); g.connect(MG);
+o.frequency.setValueAtTime(280,t);
+o.frequency.exponentialRampToValueAtTime(560,t+0.09);
+g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+o.start(t); o.stop(t+0.13);
 }
 
 function sfxLand() {
-if (!audioCtx) return;
-const o = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-o.type = 'sine';
-o.connect(g); g.connect(masterGain);
-const t = audioCtx.currentTime;
-o.frequency.setValueAtTime(180, t);
-o.frequency.exponentialRampToValueAtTime(70, t + 0.1);
-g.gain.setValueAtTime(0.22, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-o.start(t); o.stop(t + 0.12);
+if (!AC) return;
+const t=AC.currentTime;
+const o=AC.createOscillator(),g=AC.createGain();
+o.type='sine'; o.connect(g); g.connect(MG);
+o.frequency.setValueAtTime(180,t);
+o.frequency.exponentialRampToValueAtTime(70,t+0.1);
+g.gain.setValueAtTime(0.22,t); g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
+o.start(t); o.stop(t+0.14);
 }
 
-function sfxDeath() {
-if (!audioCtx) return;
-[220,180,140,100].forEach((f, i) => {
-const o = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-o.type = 'sawtooth';
-o.connect(g); g.connect(masterGain);
-const t = audioCtx.currentTime + i * 0.1;
-o.frequency.value = f;
-g.gain.setValueAtTime(0.28, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-o.start(t); o.stop(t + 0.25);
+function sfxDie() {
+if (!AC) return;
+[200,160,120,85].forEach((f,i)=>{
+const t=AC.currentTime+i*0.1;
+osc('sawtooth',f,0.28,t,0.18);
 });
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // ПРЫЖОК
-// ═══════════════════════════════════════════════════════
-function doJump() {
-if (gameState !== 'play') return;
-if (ball.onGround) {
-ball.vy = JUMP_VY;
-ball.onGround = false;
-ball.canDJump = true;
+// ─────────────────────────────────────────────────────────────
+function jump() {
+if (MODE !== 'play') return;
+if (bOnGround) {
+bvy = JV; bOnGround = false; bCanDJ = true;
 sfxJump();
-} else if (ball.canDJump) {
-ball.vy = Math.min(ball.vy - 0.3, DJUMP_VY);
-ball.canDJump = false;
+} else if (bCanDJ) {
+bvy = Math.min(bvy - 0.2, DV); bCanDJ = false;
 sfxJump();
-spawnDJumpFX();
+djParticles();
 }
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // ЧАСТИЦЫ
-// ═══════════════════════════════════════════════════════
-function spawnLandFX() {
-for (let i = 0; i < 12; i++) {
-const a = Math.PI + (Math.random() - 0.5) * Math.PI * 0.9;
-const s = 1.5 + Math.random() * 3.5;
-particles.push({
-x: BALL_X, y: GROUND_Y,
-vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.5,
-life: 1, decay: 0.045 + Math.random() * 0.04,
-r : 3 + Math.random() * 3,
-color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)]
+// ─────────────────────────────────────────────────────────────
+function landParticles() {
+for (let i=0;i<12;i++) {
+const a = Math.PI + (Math.random()-.5)*Math.PI*0.85;
+const s = 1.5 + Math.random()*4;
+parts.push({
+x:BX, y:GY, vx:Math.cos(a)*s, vy:Math.sin(a)*s-0.5,
+life:1, dec:0.04+Math.random()*0.04,
+r:2.5+Math.random()*3,
+col: NEON[Math.floor(Math.random()*NEON.length)]
 });
 }
 }
 
-function spawnDJumpFX() {
-for (let i = 0; i < 8; i++) {
-const a = Math.random() * Math.PI * 2;
-const s = 1 + Math.random() * 2;
-particles.push({
-x: BALL_X + (Math.random()-.5)*BALL_R*1.5,
-y: ball.y + BALL_R,
-vx: Math.cos(a)*s, vy: Math.sin(a)*s + 0.8,
-life: 1, decay: 0.07 + Math.random()*.05,
-r: 2 + Math.random()*3,
-color: '#cc33ff'
+function djParticles() {
+for (let i=0;i<8;i++) {
+const a = Math.random()*Math.PI*2;
+const s = 1+Math.random()*2.5;
+parts.push({
+x:BX+(Math.random()-.5)*BR*1.6, y:by+BR,
+vx:Math.cos(a)*s, vy:Math.sin(a)*s+1,
+life:1, dec:0.07+Math.random()*0.05,
+r:2+Math.random()*2.5,
+col:'#cc33ff'
 });
 }
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // ПРЕПЯТСТВИЯ
-// ═══════════════════════════════════════════════════════
-function spawnObstacle() {
-// Иногда двойное препятствие (как на референсе)
-const twin = Math.random() < 0.35;
-const baseH = GROUND_Y * 0.12 + Math.random() * GROUND_Y * 0.10;
-const col1 = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
-const col2 = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
-const w = Math.max(6, W * 0.014);
-
-obstacles.push({
-x : W + 20,
-w, h : baseH,
-color: col1,
-passed: false
-});
-
+// ─────────────────────────────────────────────────────────────
+function spawnObs() {
+const twin = Math.random() < 0.3;
+const h1 = GY * (0.13 + Math.random()*0.11);
+const obW = Math.max(7, W * 0.014);
+const c1 = NEON[Math.floor(Math.random()*NEON.length)];
+obs.push({ x:W+30, w:obW, h:h1, col:c1, passed:false });
 if (twin) {
-obstacles.push({
-x : W + 20 + w + Math.round(W * 0.04 + Math.random() * W * 0.03),
-w, h : baseH * (0.8 + Math.random() * 0.4),
-color: col2,
-passed: false
+const gap = obW + W*(0.04+Math.random()*0.03);
+obs.push({
+x:W+30+gap, w:obW,
+h:h1*(0.75+Math.random()*0.5),
+col:NEON[Math.floor(Math.random()*NEON.length)],
+passed:false
 });
 }
 }
 
-// ═══════════════════════════════════════════════════════
-// КОЛЛИЗИЯ
-// ═══════════════════════════════════════════════════════
-function hitTest(obs) {
-// AABB шар (квадрат вокруг круга) vs прямоугольник
-const bl = BALL_X - BALL_R + 4;
-const br = BALL_X + BALL_R - 4;
-const bt = ball.y - BALL_R + 4;
-const bb = ball.y + BALL_R - 4;
-
-const ol = obs.x;
-const or_ = obs.x + obs.w;
-const ot = GROUND_Y - obs.h;
-const ob = GROUND_Y;
-
-return br > ol && bl < or_ && bb > ot && bt < ob;
+function hitObs(o) {
+const bL = BX - BR + 5, bR = BX + BR - 5;
+const bT = by - BR + 5, bB = by + BR - 5;
+const oT = GY - o.h;
+return bR > o.x && bL < o.x + o.w && bB > oT && bT < GY;
 }
 
-// ═══════════════════════════════════════════════════════
-// УТИЛИТА: интерполяция цветов
-// ═══════════════════════════════════════════════════════
-function hexRgb(hex) {
-// Поддержка '#rrggbb'
-return {
-r: parseInt(hex.slice(1,3),16),
-g: parseInt(hex.slice(3,5),16),
-b: parseInt(hex.slice(5,7),16)
-};
-}
+// ─────────────────────────────────────────────────────────────
+// ЗАПУСК / РЕСТАРТ ИГРЫ
+// ─────────────────────────────────────────────────────────────
+function startGame() {
+MODE = 'play';
+score = 0; combo = 0; spd = 1; spdTm = 0;
+obs = []; parts = []; flOff = 0;
+obsInt = BEAT_MS * 2;
+bgCur = BG_BASE; bgTgt = BG_BASE; bgT = 1;
+bassI = 0;
 
-function lerpRgb(a, b, t) {
-const ca = hexRgb(a), cb = hexRgb(b);
-return `rgb(${Math.round(ca.r+(cb.r-ca.r)*t)},${Math.round(ca.g+(cb.g-ca.g)*t)},${Math.round(ca.b+(cb.b-ca.b)*t)})`;
-}
+// пересчитать размеры (на случай ресайза)
+onResize();
 
-function pickNewBg() {
-let c;
-do { c = BG_COLORS[Math.floor(Math.random()*BG_COLORS.length)]; } while (c===targetBg);
-targetBg = c; bgT = 0;
-}
+by = GY - BR; bvy = 0; bOnGround = true; bCanDJ = false;
+SPD = W * 0.007;
 
-// ═══════════════════════════════════════════════════════
-// INIT GAME
-// ═══════════════════════════════════════════════════════
-function initGame() {
-score = 0;
-combo = 0;
-gameSpeed = 1;
-speedTimer = 0;
-obstacles = [];
-particles = [];
-floorOffset= 0;
-obsInterval= BEAT_MS * 2;
-currentBg = BG_COLORS[0];
-targetBg = BG_COLORS[0];
-bgT = 1;
-bassIdx = 0;
-
-resize();
-generateFloorTiles();
-
-ball.y = GROUND_Y - BALL_R;
-ball.vy = 0;
-ball.onGround = true;
-ball.canDJump = false;
-
-GROUND_SPEED = W * 0.007 * gameSpeed;
-
-nextObsTime = performance.now() + BEAT_MS * 3;
+nextObs = performance.now() + BEAT_MS * 3;
 
 document.getElementById('score').textContent = '0';
-document.getElementById('gameOver').style.display = 'none';
-document.getElementById('combo').classList.remove('show');
+document.getElementById('combo').className = '';
+document.getElementById('dieScreen').style.display = 'none';
 
-gameState = 'play';
-lastTs = 0;
-
-stopBeatLoop();
-startBeatLoop();
-
-if (!rafId) rafId = requestAnimationFrame(loop);
+stopMusic();
+startMusic();
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // GAME OVER
-// ═══════════════════════════════════════════════════════
-function triggerDeath() {
-gameState = 'dead';
-sfxDeath();
-stopBeatLoop();
-
-if (score > bestScore) bestScore = score;
-
-document.getElementById('finalScore').textContent = `ОЧКИ: ${score}`;
-document.getElementById('bestScore').textContent = `РЕКОРД: ${bestScore}`;
-document.getElementById('gameOver').style.display = 'flex';
+// ─────────────────────────────────────────────────────────────
+function die() {
+MODE = 'dead';
+sfxDie();
+stopMusic();
+if (score > best) best = score;
+document.getElementById('statScore').textContent = 'ОЧКИ: ' + score;
+document.getElementById('statBest').textContent = 'РЕКОРД: ' + best;
+document.getElementById('dieScreen').style.display = 'flex';
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
+// ЦВЕТ ФОНА
+// ─────────────────────────────────────────────────────────────
+function randomBg() {
+let c; do { c = BG_COLORS[Math.floor(Math.random()*BG_COLORS.length)]; } while(c===bgTgt);
+bgTgt = c; bgT = 0;
+}
+
+function lerpClr(a, b, t) {
+const p = s => ({ r:parseInt(s.slice(1,3),16), g:parseInt(s.slice(3,5),16), b:parseInt(s.slice(5,7),16) });
+const ca=p(a), cb=p(b);
+return `rgb(${~~(ca.r+(cb.r-ca.r)*t)},${~~(ca.g+(cb.g-ca.g)*t)},${~~(ca.b+(cb.b-ca.b)*t)})`;
+}
+
+// ─────────────────────────────────────────────────────────────
 // ГЛАВНЫЙ ЦИКЛ
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 function loop(ts) {
 rafId = requestAnimationFrame(loop);
 
-const dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
-lastTs = ts;
-const factor = dt / 16.667;
+const dt = prevTs ? Math.min(ts - prevTs, 50) : 16;
+prevTs = ts;
+const f = dt / 16.667; // нормировка к 60fps
 
-// ---- ОБНОВЛЕНИЕ ----
-if (gameState === 'play') {
+// ── ОБНОВЛЕНИЕ (только в режиме play) ──
+if (MODE === 'play') {
 
-// Скорость
-speedTimer += dt;
-if (speedTimer > 9000) {
-speedTimer = 0;
-gameSpeed = Math.min(gameSpeed + 0.15, 3.0);
-GROUND_SPEED = W * 0.007 * gameSpeed;
-obsInterval = Math.max(BEAT_MS * 0.85, obsInterval - 60);
+// Разгон
+spdTm += dt;
+if (spdTm > 8000) {
+spdTm = 0;
+spd = Math.min(spd + 0.12, 2.8);
+SPD = W * 0.007 * spd;
+obsInt = Math.max(BEAT_MS * 0.8, obsInt - 55);
 }
 
-// Фон — переход
-bgT = Math.min(1, bgT + 0.05 * factor);
+// Фон
+bgT = Math.min(1, bgT + 0.055 * f);
 
-// Шарик
-if (!ball.onGround) {
-ball.vy += GRAVITY * factor;
-ball.y += ball.vy * factor;
-if (ball.y >= GROUND_Y - BALL_R) {
-ball.y = GROUND_Y - BALL_R;
-ball.vy = 0;
-ball.onGround = true;
-ball.canDJump = false;
-onLand();
+// Физика шарика
+if (!bOnGround) {
+bvy += GR * f;
+by += bvy * f;
+if (by >= GY - BR) {
+by = GY - BR; bvy = 0; bOnGround = true; bCanDJ = false;
+sfxLand(); landParticles(); randomBg();
+combo = 0;
+document.getElementById('combo').className = '';
 }
 }
 
-// Скролл пола
-floorOffset = (floorOffset + GROUND_SPEED * factor) % (W * 2);
+// Скролл
+flOff = (flOff + SPD * f) % (W * 2);
 
-// Спавн
-if (ts >= nextObsTime) {
-spawnObstacle();
-nextObsTime = ts + obsInterval;
-}
+// Спавн препятствий
+if (ts >= nextObs) { spawnObs(); nextObs = ts + obsInt; }
 
-// Обновить препятствия
-for (let i = obstacles.length - 1; i >= 0; i--) {
-const o = obstacles[i];
-o.x -= GROUND_SPEED * factor;
-
-if (!o.passed && o.x + o.w < BALL_X - BALL_R) {
-o.passed = true;
+// Препятствия
+for (let i = obs.length - 1; i >= 0; i--) {
+obs[i].x -= SPD * f;
+if (!obs[i].passed && obs[i].x + obs[i].w < BX - BR) {
+obs[i].passed = true;
 combo++;
 score += 10 + combo * 2;
 document.getElementById('score').textContent = score;
-const comboEl = document.getElementById('combo');
 if (combo >= 3) {
-comboEl.textContent = `COMBO ×${combo}`;
-comboEl.classList.add('show');
-} else {
-comboEl.classList.remove('show');
+const el = document.getElementById('combo');
+el.textContent = 'COMBO ×' + combo;
+el.className = 'on';
 }
 }
-
-if (hitTest(o)) { triggerDeath(); return; }
-if (o.x + o.w < -30) obstacles.splice(i, 1);
+if (hitObs(obs[i])) { die(); return; }
+if (obs[i].x + obs[i].w < -40) obs.splice(i, 1);
 }
 
 // Частицы
-for (let i = particles.length - 1; i >= 0; i--) {
-const p = particles[i];
-p.x += p.vx * factor;
-p.y += p.vy * factor;
-p.vy += 0.18 * factor;
-p.life -= p.decay * factor;
-if (p.life <= 0) particles.splice(i, 1);
+for (let i = parts.length - 1; i >= 0; i--) {
+const p = parts[i];
+p.x += p.vx * f; p.y += p.vy * f; p.vy += 0.18 * f;
+p.life -= p.dec * f;
+if (p.life <= 0) parts.splice(i, 1);
 }
 }
 
-// ---- РИСОВАНИЕ ----
-draw(ts);
+// ── РИСОВАНИЕ (всегда) ──
+render(ts);
 }
 
-function onLand() {
-sfxLand();
-spawnLandFX();
-pickNewBg();
-combo = 0;
-document.getElementById('combo').classList.remove('show');
-}
+// ─────────────────────────────────────────────────────────────
+// РЕНДЕР
+// ─────────────────────────────────────────────────────────────
+function render(ts) {
+// Фон
+const bg = bgT >= 1 ? bgTgt : lerpClr(bgCur, bgTgt, bgT);
+if (bgT >= 1) bgCur = bgTgt;
+CTX.fillStyle = bg;
+CTX.fillRect(0, 0, W, H);
 
-// ═══════════════════════════════════════════════════════
-// ОТРИСОВКА
-// ═══════════════════════════════════════════════════════
-function draw(ts) {
-// --- Фон ---
-const bg = (bgT >= 1) ? targetBg : lerpRgb(currentBg, targetBg, bgT);
-if (bgT >= 1) currentBg = targetBg;
-ctx.fillStyle = bg;
-ctx.fillRect(0, 0, W, H);
-
-// Лёгкая сетка фона (tron-эстетика)
 drawGrid();
-
-// --- Земля ---
 drawGround();
-
-// --- Частицы ---
 drawParticles();
-
-// --- Препятствия ---
-drawObstacles();
-
-// --- Шарик ---
+drawObs();
 drawBall();
 
-// --- Beat-пульс (лёгкое свечение экрана) ---
-if (gameState === 'play') {
+// Beat-пульс
+if (MODE === 'play') {
 const ph = (ts % BEAT_MS) / BEAT_MS;
-const p = Math.max(0, 1 - ph * 4);
-if (p > 0) {
-ctx.fillStyle = `rgba(0,240,255,${p * 0.05})`;
-ctx.fillRect(0, 0, W, H);
+const pv = Math.max(0, 1 - ph * 5);
+if (pv > 0) {
+CTX.fillStyle = `rgba(0,240,255,${(pv * 0.06).toFixed(3)})`;
+CTX.fillRect(0, 0, W, H);
 }
 }
 }
 
-// ────────────────────────────────────────────────────────
 function drawGrid() {
-const step = Math.round(W / 14);
-ctx.strokeStyle = 'rgba(0,240,255,0.04)';
-ctx.lineWidth = 1;
-ctx.beginPath();
-for (let x = 0; x < W; x += step) {
-ctx.moveTo(x, 0); ctx.lineTo(x, GROUND_Y);
-}
-const ystep = step;
-for (let y = 0; y < GROUND_Y; y += ystep) {
-ctx.moveTo(0, y); ctx.lineTo(W, y);
-}
-ctx.stroke();
+CTX.save();
+CTX.strokeStyle = 'rgba(0,240,255,0.045)';
+CTX.lineWidth = 1;
+const step = Math.round(W / 12);
+CTX.beginPath();
+for (let x = 0; x <= W; x += step) { CTX.moveTo(x,0); CTX.lineTo(x,GY); }
+for (let y = 0; y <= GY; y += step) { CTX.moveTo(0,y); CTX.lineTo(W,y); }
+CTX.stroke();
+CTX.restore();
 }
 
-// ────────────────────────────────────────────────────────
 function drawGround() {
-// Основная чёрная плоскость
-ctx.fillStyle = GROUND_COLOR;
-ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+// Чёрная плоскость
+CTX.fillStyle = '#000000';
+CTX.fillRect(0, GY, W, H - GY);
 
-// Яркая граница (tron-линия)
-ctx.strokeStyle = '#00f0ff';
-ctx.lineWidth = 2.5;
-ctx.shadowColor = '#00f0ff';
-ctx.shadowBlur = 14;
-ctx.beginPath();
-ctx.moveTo(0, GROUND_Y);
-ctx.lineTo(W, GROUND_Y);
-ctx.stroke();
-ctx.shadowBlur = 0;
+// Граница (tron-линия)
+CTX.save();
+CTX.strokeStyle = '#00f0ff';
+CTX.lineWidth = 3;
+CTX.shadowColor = '#00f0ff';
+CTX.shadowBlur = 16;
+CTX.beginPath();
+CTX.moveTo(0, GY); CTX.lineTo(W, GY);
+CTX.stroke();
+CTX.restore();
 
-// Декоративные вертикальные полосы (как в референсе)
-const tileW = W * 0.13;
-floorTiles.forEach(tile => {
-const drawX = ((tile.relX - floorOffset % (W * 2)) + W * 4) % (W * 2);
-if (drawX > W + 20) return;
-
-ctx.strokeStyle = tile.color;
-ctx.lineWidth = tile.w;
-ctx.shadowColor = tile.color;
-ctx.shadowBlur = 8;
-const y0 = GROUND_Y + 6;
-const y1 = H - 4;
-ctx.beginPath();
-ctx.moveTo(drawX, y0);
-ctx.lineTo(drawX, y1);
-ctx.stroke();
+// Вертикальные цветные полосы
+CTX.save();
+const totalW = W * 2;
+floor.forEach(t => {
+const dx = ((t.rx - flOff) % totalW + totalW) % totalW;
+if (dx > W + 10) return;
+CTX.strokeStyle = t.col;
+CTX.lineWidth = t.w;
+CTX.shadowColor = t.col;
+CTX.shadowBlur = 7;
+CTX.beginPath();
+CTX.moveTo(dx, GY + 5);
+CTX.lineTo(dx, H);
+CTX.stroke();
 });
-ctx.shadowBlur = 0;
-
-// Горизонтальная перспективная линия (вторая полоса)
-ctx.strokeStyle = 'rgba(0,240,255,0.15)';
-ctx.lineWidth = 1;
-ctx.beginPath();
-ctx.moveTo(0, GROUND_Y + (H - GROUND_Y) * 0.45);
-ctx.lineTo(W, GROUND_Y + (H - GROUND_Y) * 0.45);
-ctx.stroke();
+CTX.restore();
 }
 
-// ────────────────────────────────────────────────────────
 function drawBall() {
-const x = BALL_X;
-const y = ball.y;
-const r = BALL_R;
+const x = BX, y = by, r = BR;
 
 // Тень на земле
-const shadowH = (GROUND_Y - ball.y) / (GROUND_Y * 0.55);
-const sx = Math.max(0.15, 1 - shadowH);
-ctx.save();
-ctx.globalAlpha = 0.4 * sx;
-ctx.fillStyle = '#000000';
-ctx.beginPath();
-ctx.ellipse(x, GROUND_Y + 3, r * sx, r * 0.22 * sx, 0, 0, Math.PI*2);
-ctx.fill();
-ctx.restore();
+const lift = Math.max(0, GY - y - r);
+const sc = Math.max(0.12, 1 - lift / (H * 0.42));
+CTX.save();
+CTX.globalAlpha = 0.38 * sc;
+CTX.fillStyle = '#000';
+CTX.beginPath();
+CTX.ellipse(x, GY + 4, r * sc, r * 0.22 * sc, 0, 0, Math.PI*2);
+CTX.fill();
+CTX.restore();
 
-// Внешнее свечение (glow)
-const glow = ctx.createRadialGradient(x, y, r*0.5, x, y, r*2.4);
-glow.addColorStop(0, 'rgba(204, 51,255,0.30)');
-glow.addColorStop(0.5, 'rgba(204, 51,255,0.10)');
-glow.addColorStop(1, 'rgba(204, 51,255,0)');
-ctx.fillStyle = glow;
-ctx.beginPath();
-ctx.arc(x, y, r*2.4, 0, Math.PI*2);
-ctx.fill();
+// Glow
+CTX.save();
+const grd = CTX.createRadialGradient(x,y,r*0.3,x,y,r*2.5);
+grd.addColorStop(0, 'rgba(204,51,255,0.28)');
+grd.addColorStop(0.5, 'rgba(204,51,255,0.08)');
+grd.addColorStop(1, 'rgba(204,51,255,0)');
+CTX.fillStyle = grd;
+CTX.beginPath(); CTX.arc(x,y,r*2.5,0,Math.PI*2); CTX.fill();
+CTX.restore();
 
-// Тело — плоский насыщенный круг (референс: ровный цвет)
-ctx.fillStyle = BALL_COLOR;
-ctx.shadowColor = '#ff00ff';
-ctx.shadowBlur = 18;
-ctx.beginPath();
-ctx.arc(x, y, r, 0, Math.PI*2);
-ctx.fill();
-ctx.shadowBlur = 0;
+// Тело — ровный круг (как в референсе)
+CTX.save();
+CTX.fillStyle = '#cc33ff';
+CTX.shadowColor = '#dd55ff';
+CTX.shadowBlur = 22;
+CTX.beginPath(); CTX.arc(x,y,r,0,Math.PI*2); CTX.fill();
+CTX.restore();
 
 // Контур
-ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-ctx.lineWidth = 1.5;
-ctx.beginPath();
-ctx.arc(x, y, r, 0, Math.PI*2);
-ctx.stroke();
+CTX.save();
+CTX.strokeStyle = 'rgba(255,255,255,0.22)';
+CTX.lineWidth = 2;
+CTX.beginPath(); CTX.arc(x,y,r,0,Math.PI*2); CTX.stroke();
+CTX.restore();
 }
 
-// ────────────────────────────────────────────────────────
-function drawObstacles() {
-obstacles.forEach(obs => {
-const x = obs.x;
-const yt = GROUND_Y - obs.h;
-const w = obs.w;
-const h = obs.h;
-
-ctx.shadowColor = obs.color;
-ctx.shadowBlur = 16;
-
-// Тело
-ctx.fillStyle = obs.color;
-ctx.fillRect(x, yt, w, h);
-
-// Яркий верхний торец
-ctx.fillStyle = '#ffffff';
-ctx.fillRect(x, yt, w, 3);
-
-ctx.shadowBlur = 0;
+function drawObs() {
+obs.forEach(o => {
+const yt = GY - o.h;
+CTX.save();
+CTX.fillStyle = o.col;
+CTX.shadowColor = o.col;
+CTX.shadowBlur = 18;
+CTX.fillRect(o.x, yt, o.w, o.h);
+// белый торец
+CTX.fillStyle = '#fff';
+CTX.shadowBlur = 0;
+CTX.fillRect(o.x, yt, o.w, 3);
+CTX.restore();
 });
 }
 
-// ────────────────────────────────────────────────────────
 function drawParticles() {
-particles.forEach(p => {
-ctx.globalAlpha = p.life;
-ctx.fillStyle = p.color;
-ctx.shadowColor = p.color;
-ctx.shadowBlur = 6;
-ctx.beginPath();
-ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
-ctx.fill();
+parts.forEach(p => {
+CTX.save();
+CTX.globalAlpha = p.life;
+CTX.fillStyle = p.col;
+CTX.shadowColor = p.col;
+CTX.shadowBlur = 8;
+CTX.beginPath();
+CTX.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
+CTX.fill();
+CTX.restore();
 });
-ctx.globalAlpha = 1;
-ctx.shadowBlur = 0;
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────────────────────────
 // УПРАВЛЕНИЕ
-// ═══════════════════════════════════════════════════════
-function handleInput(e) {
+// ─────────────────────────────────────────────────────────────
+function onInput(e) {
 if (e.type === 'touchstart') e.preventDefault();
 initAudio();
-
-const startEl = document.getElementById('startScreen');
-if (startEl && startEl.style.display !== 'none') return; // кнопка сама обработает
-
-if (gameState === 'play') doJump();
+if (MODE === 'play') jump();
 }
 
-canvas.addEventListener('click', handleInput);
-canvas.addEventListener('touchstart', handleInput, { passive: false });
+CV.addEventListener('click', onInput);
+CV.addEventListener('touchstart', onInput, { passive: false });
 
 document.addEventListener('keydown', e => {
 if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
 e.preventDefault();
 initAudio();
-const startEl = document.getElementById('startScreen');
-if (startEl && startEl.style.display !== 'none') return;
-if (gameState === 'play') doJump();
+if (MODE === 'play') jump();
 });
 
-// ---- Кнопки ----
-document.getElementById('startBtn').addEventListener('click', e => {
+document.getElementById('btnStart').addEventListener('click', e => {
 e.stopPropagation();
 initAudio();
 document.getElementById('startScreen').style.display = 'none';
-initGame();
-});
-document.getElementById('startBtn').addEventListener('touchend', e => {
-e.preventDefault(); e.stopPropagation();
-initAudio();
-document.getElementById('startScreen').style.display = 'none';
-initGame();
+startGame();
 });
 
-document.getElementById('restartBtn').addEventListener('click', e => {
+document.getElementById('btnRestart').addEventListener('click', e => {
 e.stopPropagation();
 initAudio();
-initGame();
+startGame();
 });
-document.getElementById('restartBtn').addEventListener('touchend', e => {
+
+// touch-варианты кнопок
+['btnStart','btnRestart'].forEach(id => {
+document.getElementById(id).addEventListener('touchend', e => {
 e.preventDefault(); e.stopPropagation();
 initAudio();
-initGame();
+if (id === 'btnStart') {
+document.getElementById('startScreen').style.display = 'none';
+}
+startGame();
+});
 });
 
-// ═══════════════════════════════════════════════════════
-// СТАРТ
-// ═══════════════════════════════════════════════════════
-resize();
-generateFloorTiles();
+// ─────────────────────────────────────────────────────────────
+// ИНИЦИАЛИЗАЦИЯ
+// ─────────────────────────────────────────────────────────────
+onResize();
 
-// Первичное положение шарика (для стартового экрана)
-ball.y = GROUND_Y - BALL_R;
-ball.vy = 0;
-ball.onGround = true;
-gameState = 'idle';
+// Шарик на земле в меню
+by = GY - BR; bvy = 0; bOnGround = true;
+MODE = 'menu';
 
-// Запускаем рендер сразу — чтобы был виден превью
-rafId = requestAnimationFrame(function previewLoop(ts) {
-if (gameState !== 'idle') return; // передаём управление initGame
-draw(ts);
-rafId = requestAnimationFrame(previewLoop);
-});
+// Единственный rAF — стартует сразу и работает всегда
+rafId = requestAnimationFrame(loop);
 </script>
 </body>
 </html>
