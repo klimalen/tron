@@ -5,216 +5,216 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bounce Beat — Tron</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-  body {
-    background: #0a0e2e;
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none;
-    user-select: none;
-  }
+body {
+background: #0a0e2e;
+overflow: hidden;
+width: 100vw;
+height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+touch-action: none;
+user-select: none;
+}
 
-  canvas {
-    display: block;
-    cursor: pointer;
-  }
+canvas {
+display: block;
+cursor: pointer;
+}
 
-  /* ---- UI поверх canvas ---- */
-  #ui {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; 
-    display: flex;
-    justify-content: space-between;
-    padding: 14px 20px;
-    pointer-events: none;
-    z-index: 20;
-  }
+/* ---- UI поверх canvas ---- */
+#ui {
+position: fixed;
+top: 0; left: 0;
+width: 100%;
+display: flex;
+justify-content: space-between;
+padding: 14px 20px;
+pointer-events: none;
+z-index: 20;
+}
 
-  #score {
-    font: 900 clamp(20px,5vw,32px)/1 'Courier New', monospace;
-    color: #00f0ff;
-    text-shadow: 0 0 8px #00f0ff, 0 0 20px #00f0ff;
-    letter-spacing: 3px;
-  }
+#score {
+font: 900 clamp(20px,5vw,32px)/1 'Courier New', monospace;
+color: #00f0ff;
+text-shadow: 0 0 8px #00f0ff, 0 0 20px #00f0ff;
+letter-spacing: 3px;
+}
 
-  #combo {
-    font: 700 clamp(14px,3.5vw,22px)/1 'Courier New', monospace;
-    color: #ff9900;
-    text-shadow: 0 0 8px #ff9900;
-    opacity: 0;
-    transition: opacity .25s;
-  }
-  #combo.show { opacity: 1; }
+#combo {
+font: 700 clamp(14px,3.5vw,22px)/1 'Courier New', monospace;
+color: #ff9900;
+text-shadow: 0 0 8px #ff9900;
+opacity: 0;
+transition: opacity .25s;
+}
+#combo.show { opacity: 1; }
 
-  /* ---- Стартовый экран ---- */
-  #startScreen {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 8, 30, 0.93);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    z-index: 100;
-  }
+/* ---- Стартовый экран ---- */
+#startScreen {
+position: fixed;
+inset: 0;
+background: rgba(5, 8, 30, 0.93);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 18px;
+z-index: 100;
+}
 
-  #startScreen h1 {
-    font: 900 clamp(36px,9vw,72px)/1 'Courier New', monospace;
-    color: #00f0ff;
-    text-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff, 0 0 80px #0055ff;
-    letter-spacing: 6px;
-    animation: glow 1.8s ease-in-out infinite alternate;
-  }
+#startScreen h1 {
+font: 900 clamp(36px,9vw,72px)/1 'Courier New', monospace;
+color: #00f0ff;
+text-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff, 0 0 80px #0055ff;
+letter-spacing: 6px;
+animation: glow 1.8s ease-in-out infinite alternate;
+}
 
-  #startScreen p {
-    font: 400 clamp(13px,3vw,18px)/1.7 'Courier New', monospace;
-    color: rgba(0,240,255,0.7);
-    text-align: center;
-    padding: 0 24px;
-    letter-spacing: 1px;
-  }
+#startScreen p {
+font: 400 clamp(13px,3vw,18px)/1.7 'Courier New', monospace;
+color: rgba(0,240,255,0.7);
+text-align: center;
+padding: 0 24px;
+letter-spacing: 1px;
+}
 
-  .tron-btn {
-    margin-top: 8px;
-    padding: 14px 48px;
-    font: 900 clamp(15px,3.5vw,20px)/1 'Courier New', monospace;
-    letter-spacing: 4px;
-    color: #0a0e2e;
-    background: #00f0ff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff;
-    transition: transform .15s, box-shadow .15s;
-    pointer-events: auto;
-  }
-  .tron-btn:hover  { transform: scale(1.06); box-shadow: 0 0 35px #00f0ff, 0 0 60px #00f0ff; }
-  .tron-btn:active { transform: scale(0.96); }
+.tron-btn {
+margin-top: 8px;
+padding: 14px 48px;
+font: 900 clamp(15px,3.5vw,20px)/1 'Courier New', monospace;
+letter-spacing: 4px;
+color: #0a0e2e;
+background: #00f0ff;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+transition: transform .15s, box-shadow .15s;
+pointer-events: auto;
+}
+.tron-btn:hover { transform: scale(1.06); box-shadow: 0 0 35px #00f0ff, 0 0 60px #00f0ff; }
+.tron-btn:active { transform: scale(0.96); }
 
-  /* ---- Game Over ---- */
-  #gameOver {
-    position: fixed;
-    inset: 0;
-    background: rgba(5, 8, 30, 0.92);
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    z-index: 100;
-  }
+/* ---- Game Over ---- */
+#gameOver {
+position: fixed;
+inset: 0;
+background: rgba(5, 8, 30, 0.92);
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 14px;
+z-index: 100;
+}
 
-  #gameOver h2 {
-    font: 900 clamp(30px,8vw,60px)/1 'Courier New', monospace;
-    color: #ff003c;
-    text-shadow: 0 0 20px #ff003c, 0 0 50px #ff003c;
-    letter-spacing: 4px;
-  }
+#gameOver h2 {
+font: 900 clamp(30px,8vw,60px)/1 'Courier New', monospace;
+color: #ff003c;
+text-shadow: 0 0 20px #ff003c, 0 0 50px #ff003c;
+letter-spacing: 4px;
+}
 
-  #finalScore, #bestScore {
-    font: 700 clamp(16px,4vw,26px)/1 'Courier New', monospace;
-    color: #00f0ff;
-    text-shadow: 0 0 8px #00f0ff;
-    letter-spacing: 2px;
-  }
+#finalScore, #bestScore {
+font: 700 clamp(16px,4vw,26px)/1 'Courier New', monospace;
+color: #00f0ff;
+text-shadow: 0 0 8px #00f0ff;
+letter-spacing: 2px;
+}
 
-  #bestScore { color: #ff9900; text-shadow: 0 0 8px #ff9900; }
+#bestScore { color: #ff9900; text-shadow: 0 0 8px #ff9900; }
 
-  @keyframes glow {
-    from { text-shadow: 0 0 10px #00f0ff, 0 0 30px #00f0ff; }
-    to   { text-shadow: 0 0 25px #00f0ff, 0 0 60px #00f0ff, 0 0 100px #0055ff; }
-  }
+@keyframes glow {
+from { text-shadow: 0 0 10px #00f0ff, 0 0 30px #00f0ff; }
+to { text-shadow: 0 0 25px #00f0ff, 0 0 60px #00f0ff, 0 0 100px #0055ff; }
+}
 </style>
 </head>
 <body>
 
 <div id="ui">
-  <div id="score">0</div>
-  <div id="combo" id="combo"></div>
+<div id="score">0</div>
+<div id="combo" id="combo"></div>
 </div>
 
 <canvas id="c"></canvas>
 
 <div id="startScreen">
-  <h1>BOUNCE BEAT</h1>
-  <p>Перепрыгивай линии в ритм музыки<br>
-     <span style="color:#ff9900">КЛИК / ПРОБЕЛ / ТАП</span> — прыжок<br>
-     <span style="color:#cc00ff">ДВОЙНОЙ КЛИК В ВОЗДУХЕ</span> — импульс</p>
-  <button class="tron-btn" id="startBtn">СТАРТ</button>
+<h1>BOUNCE BEAT</h1>
+<p>Перепрыгивай линии в ритм музыки<br>
+<span style="color:#ff9900">КЛИК / ПРОБЕЛ / ТАП</span> — прыжок<br>
+<span style="color:#cc00ff">ДВОЙНОЙ КЛИК В ВОЗДУХЕ</span> — импульс</p>
+<button class="tron-btn" id="startBtn">СТАРТ</button>
 </div>
 
 <div id="gameOver">
-  <h2>GAME OVER</h2>
-  <div id="finalScore"></div>
-  <div id="bestScore"></div>
-  <button class="tron-btn" id="restartBtn">СНОВА</button>
+<h2>GAME OVER</h2>
+<div id="finalScore"></div>
+<div id="bestScore"></div>
+<button class="tron-btn" id="restartBtn">СНОВА</button>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════
-//  CANVAS & РАЗМЕРЫ
+// CANVAS & РАЗМЕРЫ
 // ═══════════════════════════════════════════════════════
 const canvas = document.getElementById('c');
-const ctx    = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
 let W, H;
 // Игровые пропорции: высота земли, радиус шара
-let GROUND_Y;      // Y верхней грани земли
-let BALL_R;        // радиус шара
-let BALL_X;        // фиксированный X шара
+let GROUND_Y; // Y верхней грани земли
+let BALL_R; // радиус шара
+let BALL_X; // фиксированный X шара
 
 function resize() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+W = canvas.width = window.innerWidth;
+H = canvas.height = window.innerHeight;
 
-  GROUND_Y = Math.round(H * 0.82);   // земля занимает нижние ~18%
-  BALL_R   = Math.round(Math.min(W, H) * 0.075);
-  BALL_X   = Math.round(W * 0.30);
+GROUND_Y = Math.round(H * 0.82); // земля занимает нижние ~18%
+BALL_R = Math.round(Math.min(W, H) * 0.075);
+BALL_X = Math.round(W * 0.30);
 
-  // пересчитать физику
-  GRAVITY       = H * 0.0014;
-  JUMP_VY       = -(H * 0.022);
-  DJUMP_VY      = -(H * 0.016);
-  GROUND_SPEED  = W * 0.007 * gameSpeed;
+// пересчитать физику
+GRAVITY = H * 0.0014;
+JUMP_VY = -(H * 0.022);
+DJUMP_VY = -(H * 0.016);
+GROUND_SPEED = W * 0.007 * gameSpeed;
 }
 
 window.addEventListener('resize', () => { resize(); generateFloorTiles(); });
 
 // ═══════════════════════════════════════════════════════
-//  ФИЗИКА
+// ФИЗИКА
 // ═══════════════════════════════════════════════════════
 let GRAVITY, JUMP_VY, DJUMP_VY, GROUND_SPEED;
 
 // ═══════════════════════════════════════════════════════
-//  ЦВЕТА (TRON-палитра)
+// ЦВЕТА (TRON-палитра)
 // ═══════════════════════════════════════════════════════
-const BG_COLOR     = '#0a0e2e';
+const BG_COLOR = '#0a0e2e';
 const GROUND_COLOR = '#000000';
-const BALL_COLOR   = '#cc33ff';   // фиолетовый — как в референсе
-const LINE_COLORS  = ['#00f0ff','#ff9900','#ff003c','#00ff88','#cc33ff','#ffffff'];
+const BALL_COLOR = '#cc33ff'; // фиолетовый — как в референсе
+const LINE_COLORS = ['#00f0ff','#ff9900','#ff003c','#00ff88','#cc33ff','#ffffff'];
 
 // Набор цветов фона (тёмные, насыщенные)
 const BG_COLORS = [
-  '#0a0e2e','#0d1033','#10052a','#050a20','#071530',
-  '#0e1040','#130530','#0a1535','#060d28','#080520',
-  '#001020','#000f1f','#020718','#0c0228','#15052e',
-  '#1a0a00','#150800','#0f0000','#1a0000','#200010'
+'#0a0e2e','#0d1033','#10052a','#050a20','#071530',
+'#0e1040','#130530','#0a1535','#060d28','#080520',
+'#001020','#000f1f','#020718','#0c0228','#15052e',
+'#1a0a00','#150800','#0f0000','#1a0000','#200010'
 ];
 
 // ═══════════════════════════════════════════════════════
-//  СОСТОЯНИЕ ИГРЫ
+// СОСТОЯНИЕ ИГРЫ
 // ═══════════════════════════════════════════════════════
-let gameState = 'start';  // 'start' | 'play' | 'dead'
-let score     = 0;
+let gameState = 'start'; // 'start' | 'play' | 'dead'
+let score = 0;
 let bestScore = 0;
-let combo     = 0;
+let combo = 0;
 let gameSpeed = 1;
 let speedTimer = 0;
 
@@ -222,699 +222,699 @@ let speedTimer = 0;
 let ball = { y: 0, vy: 0, onGround: true, canDJump: false };
 
 // Препятствия
-let obstacles  = [];
-let floorTiles = [];   // декоративные полосы на земле
-let particles  = [];
+let obstacles = [];
+let floorTiles = []; // декоративные полосы на земле
+let particles = [];
 
 // Скролл
 let floorOffset = 0;
 
 // BPM
-const BPM         = 120;
-const BEAT_MS     = 60000 / BPM;
-let   nextObsTime = 0;
-let   obsInterval = BEAT_MS * 2;
+const BPM = 120;
+const BEAT_MS = 60000 / BPM;
+let nextObsTime = 0;
+let obsInterval = BEAT_MS * 2;
 
 // Фон
 let currentBg = BG_COLORS[0];
-let targetBg  = BG_COLORS[0];
-let bgT       = 1;
+let targetBg = BG_COLORS[0];
+let bgT = 1;
 
 // rAF
-let rafId   = null;
-let lastTs  = 0;
+let rafId = null;
+let lastTs = 0;
 
 // Audio
-let audioCtx   = null;
+let audioCtx = null;
 let masterGain = null;
-let nextBeat   = 0;
+let nextBeat = 0;
 let beatLoopId = null;
 
 // ═══════════════════════════════════════════════════════
-//  ГЕНЕРАЦИЯ ПЛИТОК ПОЛА
+// ГЕНЕРАЦИЯ ПЛИТОК ПОЛА
 // ═══════════════════════════════════════════════════════
 function generateFloorTiles() {
-  floorTiles = [];
-  const tileW = Math.round(W / 8);
-  for (let i = 0; i < 20; i++) {
-    floorTiles.push({
-      relX : i * tileW + Math.random() * tileW * 0.5,
-      color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
-      w    : 2 + Math.random() * 2,
-    });
-  }
+floorTiles = [];
+const tileW = Math.round(W / 8);
+for (let i = 0; i < 20; i++) {
+floorTiles.push({
+relX : i * tileW + Math.random() * tileW * 0.5,
+color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+w : 2 + Math.random() * 2,
+});
+}
 }
 
 // ═══════════════════════════════════════════════════════
-//  АУДИО (Web Audio — синтетика)
+// АУДИО (Web Audio — синтетика)
 // ═══════════════════════════════════════════════════════
 function initAudio() {
-  if (audioCtx) return;
-  audioCtx   = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = 0.35;
-  masterGain.connect(audioCtx.destination);
+if (audioCtx) return;
+audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+masterGain = audioCtx.createGain();
+masterGain.gain.value = 0.35;
+masterGain.connect(audioCtx.destination);
 }
 
 function startBeatLoop() {
-  if (!audioCtx) return;
-  nextBeat = audioCtx.currentTime + 0.1;
-  scheduleBeat();
+if (!audioCtx) return;
+nextBeat = audioCtx.currentTime + 0.1;
+scheduleBeat();
 }
 
 function scheduleBeat() {
-  if (gameState !== 'play') return;
-  const sec = BEAT_MS / 1000;
-  while (nextBeat < audioCtx.currentTime + 0.6) {
-    const t = nextBeat;
-    playKick(t);
-    playBass(t);
-    const idx = Math.round(t / sec);
-    if (idx % 2 === 1) playSnare(t);
-    playHihat(t);
-    nextBeat += sec;
-  }
-  beatLoopId = setTimeout(scheduleBeat, 150);
+if (gameState !== 'play') return;
+const sec = BEAT_MS / 1000;
+while (nextBeat < audioCtx.currentTime + 0.6) {
+const t = nextBeat;
+playKick(t);
+playBass(t);
+const idx = Math.round(t / sec);
+if (idx % 2 === 1) playSnare(t);
+playHihat(t);
+nextBeat += sec;
+}
+beatLoopId = setTimeout(scheduleBeat, 150);
 }
 
 function stopBeatLoop() {
-  if (beatLoopId) clearTimeout(beatLoopId);
-  beatLoopId = null;
+if (beatLoopId) clearTimeout(beatLoopId);
+beatLoopId = null;
 }
 
 function playKick(t) {
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.connect(g); g.connect(masterGain);
-  o.frequency.setValueAtTime(160, t);
-  o.frequency.exponentialRampToValueAtTime(0.001, t + 0.4);
-  g.gain.setValueAtTime(1, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-  o.start(t); o.stop(t + 0.4);
+const o = audioCtx.createOscillator();
+const g = audioCtx.createGain();
+o.connect(g); g.connect(masterGain);
+o.frequency.setValueAtTime(160, t);
+o.frequency.exponentialRampToValueAtTime(0.001, t + 0.4);
+g.gain.setValueAtTime(1, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+o.start(t); o.stop(t + 0.4);
 }
 
 function playSnare(t) {
-  const buf  = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  const s = audioCtx.createBufferSource();
-  const f = audioCtx.createBiquadFilter();
-  const g = audioCtx.createGain();
-  f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = 0.7;
-  s.buffer = buf;
-  s.connect(f); f.connect(g); g.connect(masterGain);
-  g.gain.setValueAtTime(0.28, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-  s.start(t); s.stop(t + 0.12);
+const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.12, audioCtx.sampleRate);
+const data = buf.getChannelData(0);
+for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+const s = audioCtx.createBufferSource();
+const f = audioCtx.createBiquadFilter();
+const g = audioCtx.createGain();
+f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = 0.7;
+s.buffer = buf;
+s.connect(f); f.connect(g); g.connect(masterGain);
+g.gain.setValueAtTime(0.28, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+s.start(t); s.stop(t + 0.12);
 }
 
 function playHihat(t) {
-  const buf  = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  const s = audioCtx.createBufferSource();
-  const f = audioCtx.createBiquadFilter();
-  const g = audioCtx.createGain();
-  f.type = 'highpass'; f.frequency.value = 9000;
-  s.buffer = buf;
-  s.connect(f); f.connect(g); g.connect(masterGain);
-  g.gain.setValueAtTime(0.1, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
-  s.start(t); s.stop(t + 0.05);
+const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+const data = buf.getChannelData(0);
+for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+const s = audioCtx.createBufferSource();
+const f = audioCtx.createBiquadFilter();
+const g = audioCtx.createGain();
+f.type = 'highpass'; f.frequency.value = 9000;
+s.buffer = buf;
+s.connect(f); f.connect(g); g.connect(masterGain);
+g.gain.setValueAtTime(0.1, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+s.start(t); s.stop(t + 0.05);
 }
 
 const bassNotes = [55,55,73.4,55,65.4,55,82.4,55];
-let   bassIdx   = 0;
+let bassIdx = 0;
 function playBass(t) {
-  const freq = bassNotes[bassIdx % bassNotes.length]; bassIdx++;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = 'sawtooth';
-  o.connect(g); g.connect(masterGain);
-  o.frequency.value = freq;
-  g.gain.setValueAtTime(0.22, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-  o.start(t); o.stop(t + 0.3);
+const freq = bassNotes[bassIdx % bassNotes.length]; bassIdx++;
+const o = audioCtx.createOscillator();
+const g = audioCtx.createGain();
+o.type = 'sawtooth';
+o.connect(g); g.connect(masterGain);
+o.frequency.value = freq;
+g.gain.setValueAtTime(0.22, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+o.start(t); o.stop(t + 0.3);
 }
 
 function sfxJump() {
-  if (!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = 'sine';
-  o.connect(g); g.connect(masterGain);
-  const t = audioCtx.currentTime;
-  o.frequency.setValueAtTime(280, t);
-  o.frequency.exponentialRampToValueAtTime(560, t + 0.08);
-  g.gain.setValueAtTime(0.18, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-  o.start(t); o.stop(t + 0.12);
+if (!audioCtx) return;
+const o = audioCtx.createOscillator();
+const g = audioCtx.createGain();
+o.type = 'sine';
+o.connect(g); g.connect(masterGain);
+const t = audioCtx.currentTime;
+o.frequency.setValueAtTime(280, t);
+o.frequency.exponentialRampToValueAtTime(560, t + 0.08);
+g.gain.setValueAtTime(0.18, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+o.start(t); o.stop(t + 0.12);
 }
 
 function sfxLand() {
-  if (!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = 'sine';
-  o.connect(g); g.connect(masterGain);
-  const t = audioCtx.currentTime;
-  o.frequency.setValueAtTime(180, t);
-  o.frequency.exponentialRampToValueAtTime(70, t + 0.1);
-  g.gain.setValueAtTime(0.22, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-  o.start(t); o.stop(t + 0.12);
+if (!audioCtx) return;
+const o = audioCtx.createOscillator();
+const g = audioCtx.createGain();
+o.type = 'sine';
+o.connect(g); g.connect(masterGain);
+const t = audioCtx.currentTime;
+o.frequency.setValueAtTime(180, t);
+o.frequency.exponentialRampToValueAtTime(70, t + 0.1);
+g.gain.setValueAtTime(0.22, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+o.start(t); o.stop(t + 0.12);
 }
 
 function sfxDeath() {
-  if (!audioCtx) return;
-  [220,180,140,100].forEach((f, i) => {
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = 'sawtooth';
-    o.connect(g); g.connect(masterGain);
-    const t = audioCtx.currentTime + i * 0.1;
-    o.frequency.value = f;
-    g.gain.setValueAtTime(0.28, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-    o.start(t); o.stop(t + 0.25);
-  });
+if (!audioCtx) return;
+[220,180,140,100].forEach((f, i) => {
+const o = audioCtx.createOscillator();
+const g = audioCtx.createGain();
+o.type = 'sawtooth';
+o.connect(g); g.connect(masterGain);
+const t = audioCtx.currentTime + i * 0.1;
+o.frequency.value = f;
+g.gain.setValueAtTime(0.28, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+o.start(t); o.stop(t + 0.25);
+});
 }
 
 // ═══════════════════════════════════════════════════════
-//  ПРЫЖОК
+// ПРЫЖОК
 // ═══════════════════════════════════════════════════════
 function doJump() {
-  if (gameState !== 'play') return;
-  if (ball.onGround) {
-    ball.vy       = JUMP_VY;
-    ball.onGround = false;
-    ball.canDJump = true;
-    sfxJump();
-  } else if (ball.canDJump) {
-    ball.vy       = Math.min(ball.vy - 0.3, DJUMP_VY);
-    ball.canDJump = false;
-    sfxJump();
-    spawnDJumpFX();
-  }
+if (gameState !== 'play') return;
+if (ball.onGround) {
+ball.vy = JUMP_VY;
+ball.onGround = false;
+ball.canDJump = true;
+sfxJump();
+} else if (ball.canDJump) {
+ball.vy = Math.min(ball.vy - 0.3, DJUMP_VY);
+ball.canDJump = false;
+sfxJump();
+spawnDJumpFX();
+}
 }
 
 // ═══════════════════════════════════════════════════════
-//  ЧАСТИЦЫ
+// ЧАСТИЦЫ
 // ═══════════════════════════════════════════════════════
 function spawnLandFX() {
-  for (let i = 0; i < 12; i++) {
-    const a = Math.PI + (Math.random() - 0.5) * Math.PI * 0.9;
-    const s = 1.5 + Math.random() * 3.5;
-    particles.push({
-      x: BALL_X, y: GROUND_Y,
-      vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.5,
-      life: 1, decay: 0.045 + Math.random() * 0.04,
-      r   : 3 + Math.random() * 3,
-      color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)]
-    });
-  }
+for (let i = 0; i < 12; i++) {
+const a = Math.PI + (Math.random() - 0.5) * Math.PI * 0.9;
+const s = 1.5 + Math.random() * 3.5;
+particles.push({
+x: BALL_X, y: GROUND_Y,
+vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.5,
+life: 1, decay: 0.045 + Math.random() * 0.04,
+r : 3 + Math.random() * 3,
+color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)]
+});
+}
 }
 
 function spawnDJumpFX() {
-  for (let i = 0; i < 8; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const s = 1 + Math.random() * 2;
-    particles.push({
-      x: BALL_X + (Math.random()-.5)*BALL_R*1.5,
-      y: ball.y + BALL_R,
-      vx: Math.cos(a)*s, vy: Math.sin(a)*s + 0.8,
-      life: 1, decay: 0.07 + Math.random()*.05,
-      r: 2 + Math.random()*3,
-      color: '#cc33ff'
-    });
-  }
+for (let i = 0; i < 8; i++) {
+const a = Math.random() * Math.PI * 2;
+const s = 1 + Math.random() * 2;
+particles.push({
+x: BALL_X + (Math.random()-.5)*BALL_R*1.5,
+y: ball.y + BALL_R,
+vx: Math.cos(a)*s, vy: Math.sin(a)*s + 0.8,
+life: 1, decay: 0.07 + Math.random()*.05,
+r: 2 + Math.random()*3,
+color: '#cc33ff'
+});
+}
 }
 
 // ═══════════════════════════════════════════════════════
-//  ПРЕПЯТСТВИЯ
+// ПРЕПЯТСТВИЯ
 // ═══════════════════════════════════════════════════════
 function spawnObstacle() {
-  // Иногда двойное препятствие (как на референсе)
-  const twin  = Math.random() < 0.35;
-  const baseH = GROUND_Y * 0.12 + Math.random() * GROUND_Y * 0.10;
-  const col1  = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
-  const col2  = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
-  const w     = Math.max(6, W * 0.014);
+// Иногда двойное препятствие (как на референсе)
+const twin = Math.random() < 0.35;
+const baseH = GROUND_Y * 0.12 + Math.random() * GROUND_Y * 0.10;
+const col1 = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
+const col2 = LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)];
+const w = Math.max(6, W * 0.014);
 
-  obstacles.push({
-    x    : W + 20,
-    w, h : baseH,
-    color: col1,
-    passed: false
-  });
+obstacles.push({
+x : W + 20,
+w, h : baseH,
+color: col1,
+passed: false
+});
 
-  if (twin) {
-    obstacles.push({
-      x    : W + 20 + w + Math.round(W * 0.04 + Math.random() * W * 0.03),
-      w, h : baseH * (0.8 + Math.random() * 0.4),
-      color: col2,
-      passed: false
-    });
-  }
+if (twin) {
+obstacles.push({
+x : W + 20 + w + Math.round(W * 0.04 + Math.random() * W * 0.03),
+w, h : baseH * (0.8 + Math.random() * 0.4),
+color: col2,
+passed: false
+});
+}
 }
 
 // ═══════════════════════════════════════════════════════
-//  КОЛЛИЗИЯ
+// КОЛЛИЗИЯ
 // ═══════════════════════════════════════════════════════
 function hitTest(obs) {
-  // AABB шар (квадрат вокруг круга) vs прямоугольник
-  const bl = BALL_X - BALL_R + 4;
-  const br = BALL_X + BALL_R - 4;
-  const bt = ball.y - BALL_R + 4;
-  const bb = ball.y + BALL_R - 4;
+// AABB шар (квадрат вокруг круга) vs прямоугольник
+const bl = BALL_X - BALL_R + 4;
+const br = BALL_X + BALL_R - 4;
+const bt = ball.y - BALL_R + 4;
+const bb = ball.y + BALL_R - 4;
 
-  const ol = obs.x;
-  const or_ = obs.x + obs.w;
-  const ot = GROUND_Y - obs.h;
-  const ob = GROUND_Y;
+const ol = obs.x;
+const or_ = obs.x + obs.w;
+const ot = GROUND_Y - obs.h;
+const ob = GROUND_Y;
 
-  return br > ol && bl < or_ && bb > ot && bt < ob;
+return br > ol && bl < or_ && bb > ot && bt < ob;
 }
 
 // ═══════════════════════════════════════════════════════
-//  УТИЛИТА: интерполяция цветов
+// УТИЛИТА: интерполяция цветов
 // ═══════════════════════════════════════════════════════
 function hexRgb(hex) {
-  // Поддержка '#rrggbb'
-  return {
-    r: parseInt(hex.slice(1,3),16),
-    g: parseInt(hex.slice(3,5),16),
-    b: parseInt(hex.slice(5,7),16)
-  };
+// Поддержка '#rrggbb'
+return {
+r: parseInt(hex.slice(1,3),16),
+g: parseInt(hex.slice(3,5),16),
+b: parseInt(hex.slice(5,7),16)
+};
 }
 
 function lerpRgb(a, b, t) {
-  const ca = hexRgb(a), cb = hexRgb(b);
-  return `rgb(${Math.round(ca.r+(cb.r-ca.r)*t)},${Math.round(ca.g+(cb.g-ca.g)*t)},${Math.round(ca.b+(cb.b-ca.b)*t)})`;
+const ca = hexRgb(a), cb = hexRgb(b);
+return `rgb(${Math.round(ca.r+(cb.r-ca.r)*t)},${Math.round(ca.g+(cb.g-ca.g)*t)},${Math.round(ca.b+(cb.b-ca.b)*t)})`;
 }
 
 function pickNewBg() {
-  let c;
-  do { c = BG_COLORS[Math.floor(Math.random()*BG_COLORS.length)]; } while (c===targetBg);
-  targetBg = c; bgT = 0;
+let c;
+do { c = BG_COLORS[Math.floor(Math.random()*BG_COLORS.length)]; } while (c===targetBg);
+targetBg = c; bgT = 0;
 }
 
 // ═══════════════════════════════════════════════════════
-//  INIT GAME
+// INIT GAME
 // ═══════════════════════════════════════════════════════
 function initGame() {
-  score      = 0;
-  combo      = 0;
-  gameSpeed  = 1;
-  speedTimer = 0;
-  obstacles  = [];
-  particles  = [];
-  floorOffset= 0;
-  obsInterval= BEAT_MS * 2;
-  currentBg  = BG_COLORS[0];
-  targetBg   = BG_COLORS[0];
-  bgT        = 1;
-  bassIdx    = 0;
+score = 0;
+combo = 0;
+gameSpeed = 1;
+speedTimer = 0;
+obstacles = [];
+particles = [];
+floorOffset= 0;
+obsInterval= BEAT_MS * 2;
+currentBg = BG_COLORS[0];
+targetBg = BG_COLORS[0];
+bgT = 1;
+bassIdx = 0;
 
-  resize();
-  generateFloorTiles();
+resize();
+generateFloorTiles();
 
-  ball.y        = GROUND_Y - BALL_R;
-  ball.vy       = 0;
-  ball.onGround = true;
-  ball.canDJump = false;
+ball.y = GROUND_Y - BALL_R;
+ball.vy = 0;
+ball.onGround = true;
+ball.canDJump = false;
 
-  GROUND_SPEED = W * 0.007 * gameSpeed;
+GROUND_SPEED = W * 0.007 * gameSpeed;
 
-  nextObsTime  = performance.now() + BEAT_MS * 3;
+nextObsTime = performance.now() + BEAT_MS * 3;
 
-  document.getElementById('score').textContent = '0';
-  document.getElementById('gameOver').style.display = 'none';
-  document.getElementById('combo').classList.remove('show');
+document.getElementById('score').textContent = '0';
+document.getElementById('gameOver').style.display = 'none';
+document.getElementById('combo').classList.remove('show');
 
-  gameState = 'play';
-  lastTs    = 0;
+gameState = 'play';
+lastTs = 0;
 
-  stopBeatLoop();
-  startBeatLoop();
+stopBeatLoop();
+startBeatLoop();
 
-  if (!rafId) rafId = requestAnimationFrame(loop);
+if (!rafId) rafId = requestAnimationFrame(loop);
 }
 
 // ═══════════════════════════════════════════════════════
-//  GAME OVER
+// GAME OVER
 // ═══════════════════════════════════════════════════════
 function triggerDeath() {
-  gameState = 'dead';
-  sfxDeath();
-  stopBeatLoop();
+gameState = 'dead';
+sfxDeath();
+stopBeatLoop();
 
-  if (score > bestScore) bestScore = score;
+if (score > bestScore) bestScore = score;
 
-  document.getElementById('finalScore').textContent = `ОЧКИ: ${score}`;
-  document.getElementById('bestScore').textContent  = `РЕКОРД: ${bestScore}`;
-  document.getElementById('gameOver').style.display = 'flex';
+document.getElementById('finalScore').textContent = `ОЧКИ: ${score}`;
+document.getElementById('bestScore').textContent = `РЕКОРД: ${bestScore}`;
+document.getElementById('gameOver').style.display = 'flex';
 }
 
 // ═══════════════════════════════════════════════════════
-//  ГЛАВНЫЙ ЦИКЛ
+// ГЛАВНЫЙ ЦИКЛ
 // ═══════════════════════════════════════════════════════
 function loop(ts) {
-  rafId = requestAnimationFrame(loop);
+rafId = requestAnimationFrame(loop);
 
-  const dt     = lastTs ? Math.min(ts - lastTs, 50) : 16;
-  lastTs       = ts;
-  const factor = dt / 16.667;
+const dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
+lastTs = ts;
+const factor = dt / 16.667;
 
-  // ---- ОБНОВЛЕНИЕ ----
-  if (gameState === 'play') {
+// ---- ОБНОВЛЕНИЕ ----
+if (gameState === 'play') {
 
-    // Скорость
-    speedTimer += dt;
-    if (speedTimer > 9000) {
-      speedTimer  = 0;
-      gameSpeed   = Math.min(gameSpeed + 0.15, 3.0);
-      GROUND_SPEED = W * 0.007 * gameSpeed;
-      obsInterval  = Math.max(BEAT_MS * 0.85, obsInterval - 60);
-    }
+// Скорость
+speedTimer += dt;
+if (speedTimer > 9000) {
+speedTimer = 0;
+gameSpeed = Math.min(gameSpeed + 0.15, 3.0);
+GROUND_SPEED = W * 0.007 * gameSpeed;
+obsInterval = Math.max(BEAT_MS * 0.85, obsInterval - 60);
+}
 
-    // Фон — переход
-    bgT = Math.min(1, bgT + 0.05 * factor);
+// Фон — переход
+bgT = Math.min(1, bgT + 0.05 * factor);
 
-    // Шарик
-    if (!ball.onGround) {
-      ball.vy += GRAVITY * factor;
-      ball.y  += ball.vy * factor;
-      if (ball.y >= GROUND_Y - BALL_R) {
-        ball.y        = GROUND_Y - BALL_R;
-        ball.vy       = 0;
-        ball.onGround = true;
-        ball.canDJump = false;
-        onLand();
-      }
-    }
+// Шарик
+if (!ball.onGround) {
+ball.vy += GRAVITY * factor;
+ball.y += ball.vy * factor;
+if (ball.y >= GROUND_Y - BALL_R) {
+ball.y = GROUND_Y - BALL_R;
+ball.vy = 0;
+ball.onGround = true;
+ball.canDJump = false;
+onLand();
+}
+}
 
-    // Скролл пола
-    floorOffset = (floorOffset + GROUND_SPEED * factor) % (W * 2);
+// Скролл пола
+floorOffset = (floorOffset + GROUND_SPEED * factor) % (W * 2);
 
-    // Спавн
-    if (ts >= nextObsTime) {
-      spawnObstacle();
-      nextObsTime = ts + obsInterval;
-    }
+// Спавн
+if (ts >= nextObsTime) {
+spawnObstacle();
+nextObsTime = ts + obsInterval;
+}
 
-    // Обновить препятствия
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-      const o = obstacles[i];
-      o.x -= GROUND_SPEED * factor;
+// Обновить препятствия
+for (let i = obstacles.length - 1; i >= 0; i--) {
+const o = obstacles[i];
+o.x -= GROUND_SPEED * factor;
 
-      if (!o.passed && o.x + o.w < BALL_X - BALL_R) {
-        o.passed = true;
-        combo++;
-        score += 10 + combo * 2;
-        document.getElementById('score').textContent = score;
-        const comboEl = document.getElementById('combo');
-        if (combo >= 3) {
-          comboEl.textContent = `COMBO ×${combo}`;
-          comboEl.classList.add('show');
-        } else {
-          comboEl.classList.remove('show');
-        }
-      }
+if (!o.passed && o.x + o.w < BALL_X - BALL_R) {
+o.passed = true;
+combo++;
+score += 10 + combo * 2;
+document.getElementById('score').textContent = score;
+const comboEl = document.getElementById('combo');
+if (combo >= 3) {
+comboEl.textContent = `COMBO ×${combo}`;
+comboEl.classList.add('show');
+} else {
+comboEl.classList.remove('show');
+}
+}
 
-      if (hitTest(o)) { triggerDeath(); return; }
-      if (o.x + o.w < -30) obstacles.splice(i, 1);
-    }
+if (hitTest(o)) { triggerDeath(); return; }
+if (o.x + o.w < -30) obstacles.splice(i, 1);
+}
 
-    // Частицы
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.x   += p.vx * factor;
-      p.y   += p.vy * factor;
-      p.vy  += 0.18 * factor;
-      p.life -= p.decay * factor;
-      if (p.life <= 0) particles.splice(i, 1);
-    }
-  }
+// Частицы
+for (let i = particles.length - 1; i >= 0; i--) {
+const p = particles[i];
+p.x += p.vx * factor;
+p.y += p.vy * factor;
+p.vy += 0.18 * factor;
+p.life -= p.decay * factor;
+if (p.life <= 0) particles.splice(i, 1);
+}
+}
 
-  // ---- РИСОВАНИЕ ----
-  draw(ts);
+// ---- РИСОВАНИЕ ----
+draw(ts);
 }
 
 function onLand() {
-  sfxLand();
-  spawnLandFX();
-  pickNewBg();
-  combo = 0;
-  document.getElementById('combo').classList.remove('show');
+sfxLand();
+spawnLandFX();
+pickNewBg();
+combo = 0;
+document.getElementById('combo').classList.remove('show');
 }
 
 // ═══════════════════════════════════════════════════════
-//  ОТРИСОВКА
+// ОТРИСОВКА
 // ═══════════════════════════════════════════════════════
 function draw(ts) {
-  // --- Фон ---
-  const bg = (bgT >= 1) ? targetBg : lerpRgb(currentBg, targetBg, bgT);
-  if (bgT >= 1) currentBg = targetBg;
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
+// --- Фон ---
+const bg = (bgT >= 1) ? targetBg : lerpRgb(currentBg, targetBg, bgT);
+if (bgT >= 1) currentBg = targetBg;
+ctx.fillStyle = bg;
+ctx.fillRect(0, 0, W, H);
 
-  // Лёгкая сетка фона (tron-эстетика)
-  drawGrid();
+// Лёгкая сетка фона (tron-эстетика)
+drawGrid();
 
-  // --- Земля ---
-  drawGround();
+// --- Земля ---
+drawGround();
 
-  // --- Частицы ---
-  drawParticles();
+// --- Частицы ---
+drawParticles();
 
-  // --- Препятствия ---
-  drawObstacles();
+// --- Препятствия ---
+drawObstacles();
 
-  // --- Шарик ---
-  drawBall();
+// --- Шарик ---
+drawBall();
 
-  // --- Beat-пульс (лёгкое свечение экрана) ---
-  if (gameState === 'play') {
-    const ph = (ts % BEAT_MS) / BEAT_MS;
-    const p  = Math.max(0, 1 - ph * 4);
-    if (p > 0) {
-      ctx.fillStyle = `rgba(0,240,255,${p * 0.05})`;
-      ctx.fillRect(0, 0, W, H);
-    }
-  }
+// --- Beat-пульс (лёгкое свечение экрана) ---
+if (gameState === 'play') {
+const ph = (ts % BEAT_MS) / BEAT_MS;
+const p = Math.max(0, 1 - ph * 4);
+if (p > 0) {
+ctx.fillStyle = `rgba(0,240,255,${p * 0.05})`;
+ctx.fillRect(0, 0, W, H);
+}
+}
 }
 
 // ────────────────────────────────────────────────────────
 function drawGrid() {
-  const step = Math.round(W / 14);
-  ctx.strokeStyle = 'rgba(0,240,255,0.04)';
-  ctx.lineWidth   = 1;
-  ctx.beginPath();
-  for (let x = 0; x < W; x += step) {
-    ctx.moveTo(x, 0); ctx.lineTo(x, GROUND_Y);
-  }
-  const ystep = step;
-  for (let y = 0; y < GROUND_Y; y += ystep) {
-    ctx.moveTo(0, y); ctx.lineTo(W, y);
-  }
-  ctx.stroke();
+const step = Math.round(W / 14);
+ctx.strokeStyle = 'rgba(0,240,255,0.04)';
+ctx.lineWidth = 1;
+ctx.beginPath();
+for (let x = 0; x < W; x += step) {
+ctx.moveTo(x, 0); ctx.lineTo(x, GROUND_Y);
+}
+const ystep = step;
+for (let y = 0; y < GROUND_Y; y += ystep) {
+ctx.moveTo(0, y); ctx.lineTo(W, y);
+}
+ctx.stroke();
 }
 
 // ────────────────────────────────────────────────────────
 function drawGround() {
-  // Основная чёрная плоскость
-  ctx.fillStyle = GROUND_COLOR;
-  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+// Основная чёрная плоскость
+ctx.fillStyle = GROUND_COLOR;
+ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
 
-  // Яркая граница (tron-линия)
-  ctx.strokeStyle = '#00f0ff';
-  ctx.lineWidth   = 2.5;
-  ctx.shadowColor = '#00f0ff';
-  ctx.shadowBlur  = 14;
-  ctx.beginPath();
-  ctx.moveTo(0, GROUND_Y);
-  ctx.lineTo(W, GROUND_Y);
-  ctx.stroke();
-  ctx.shadowBlur = 0;
+// Яркая граница (tron-линия)
+ctx.strokeStyle = '#00f0ff';
+ctx.lineWidth = 2.5;
+ctx.shadowColor = '#00f0ff';
+ctx.shadowBlur = 14;
+ctx.beginPath();
+ctx.moveTo(0, GROUND_Y);
+ctx.lineTo(W, GROUND_Y);
+ctx.stroke();
+ctx.shadowBlur = 0;
 
-  // Декоративные вертикальные полосы (как в референсе)
-  const tileW = W * 0.13;
-  floorTiles.forEach(tile => {
-    const drawX = ((tile.relX - floorOffset % (W * 2)) + W * 4) % (W * 2);
-    if (drawX > W + 20) return;
+// Декоративные вертикальные полосы (как в референсе)
+const tileW = W * 0.13;
+floorTiles.forEach(tile => {
+const drawX = ((tile.relX - floorOffset % (W * 2)) + W * 4) % (W * 2);
+if (drawX > W + 20) return;
 
-    ctx.strokeStyle = tile.color;
-    ctx.lineWidth   = tile.w;
-    ctx.shadowColor = tile.color;
-    ctx.shadowBlur  = 8;
-    const y0 = GROUND_Y + 6;
-    const y1 = H - 4;
-    ctx.beginPath();
-    ctx.moveTo(drawX, y0);
-    ctx.lineTo(drawX, y1);
-    ctx.stroke();
-  });
-  ctx.shadowBlur = 0;
+ctx.strokeStyle = tile.color;
+ctx.lineWidth = tile.w;
+ctx.shadowColor = tile.color;
+ctx.shadowBlur = 8;
+const y0 = GROUND_Y + 6;
+const y1 = H - 4;
+ctx.beginPath();
+ctx.moveTo(drawX, y0);
+ctx.lineTo(drawX, y1);
+ctx.stroke();
+});
+ctx.shadowBlur = 0;
 
-  // Горизонтальная перспективная линия (вторая полоса)
-  ctx.strokeStyle = 'rgba(0,240,255,0.15)';
-  ctx.lineWidth   = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, GROUND_Y + (H - GROUND_Y) * 0.45);
-  ctx.lineTo(W, GROUND_Y + (H - GROUND_Y) * 0.45);
-  ctx.stroke();
+// Горизонтальная перспективная линия (вторая полоса)
+ctx.strokeStyle = 'rgba(0,240,255,0.15)';
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(0, GROUND_Y + (H - GROUND_Y) * 0.45);
+ctx.lineTo(W, GROUND_Y + (H - GROUND_Y) * 0.45);
+ctx.stroke();
 }
 
 // ────────────────────────────────────────────────────────
 function drawBall() {
-  const x = BALL_X;
-  const y = ball.y;
-  const r = BALL_R;
+const x = BALL_X;
+const y = ball.y;
+const r = BALL_R;
 
-  // Тень на земле
-  const shadowH = (GROUND_Y - ball.y) / (GROUND_Y * 0.55);
-  const sx = Math.max(0.15, 1 - shadowH);
-  ctx.save();
-  ctx.globalAlpha = 0.4 * sx;
-  ctx.fillStyle   = '#000000';
-  ctx.beginPath();
-  ctx.ellipse(x, GROUND_Y + 3, r * sx, r * 0.22 * sx, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
+// Тень на земле
+const shadowH = (GROUND_Y - ball.y) / (GROUND_Y * 0.55);
+const sx = Math.max(0.15, 1 - shadowH);
+ctx.save();
+ctx.globalAlpha = 0.4 * sx;
+ctx.fillStyle = '#000000';
+ctx.beginPath();
+ctx.ellipse(x, GROUND_Y + 3, r * sx, r * 0.22 * sx, 0, 0, Math.PI*2);
+ctx.fill();
+ctx.restore();
 
-  // Внешнее свечение (glow)
-  const glow = ctx.createRadialGradient(x, y, r*0.5, x, y, r*2.4);
-  glow.addColorStop(0,   'rgba(204, 51,255,0.30)');
-  glow.addColorStop(0.5, 'rgba(204, 51,255,0.10)');
-  glow.addColorStop(1,   'rgba(204, 51,255,0)');
-  ctx.fillStyle = glow;
-  ctx.beginPath();
-  ctx.arc(x, y, r*2.4, 0, Math.PI*2);
-  ctx.fill();
+// Внешнее свечение (glow)
+const glow = ctx.createRadialGradient(x, y, r*0.5, x, y, r*2.4);
+glow.addColorStop(0, 'rgba(204, 51,255,0.30)');
+glow.addColorStop(0.5, 'rgba(204, 51,255,0.10)');
+glow.addColorStop(1, 'rgba(204, 51,255,0)');
+ctx.fillStyle = glow;
+ctx.beginPath();
+ctx.arc(x, y, r*2.4, 0, Math.PI*2);
+ctx.fill();
 
-  // Тело — плоский насыщенный круг (референс: ровный цвет)
-  ctx.fillStyle   = BALL_COLOR;
-  ctx.shadowColor = '#ff00ff';
-  ctx.shadowBlur  = 18;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI*2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
+// Тело — плоский насыщенный круг (референс: ровный цвет)
+ctx.fillStyle = BALL_COLOR;
+ctx.shadowColor = '#ff00ff';
+ctx.shadowBlur = 18;
+ctx.beginPath();
+ctx.arc(x, y, r, 0, Math.PI*2);
+ctx.fill();
+ctx.shadowBlur = 0;
 
-  // Контур
-  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-  ctx.lineWidth   = 1.5;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI*2);
-  ctx.stroke();
+// Контур
+ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+ctx.lineWidth = 1.5;
+ctx.beginPath();
+ctx.arc(x, y, r, 0, Math.PI*2);
+ctx.stroke();
 }
 
 // ────────────────────────────────────────────────────────
 function drawObstacles() {
-  obstacles.forEach(obs => {
-    const x  = obs.x;
-    const yt = GROUND_Y - obs.h;
-    const w  = obs.w;
-    const h  = obs.h;
+obstacles.forEach(obs => {
+const x = obs.x;
+const yt = GROUND_Y - obs.h;
+const w = obs.w;
+const h = obs.h;
 
-    ctx.shadowColor = obs.color;
-    ctx.shadowBlur  = 16;
+ctx.shadowColor = obs.color;
+ctx.shadowBlur = 16;
 
-    // Тело
-    ctx.fillStyle = obs.color;
-    ctx.fillRect(x, yt, w, h);
+// Тело
+ctx.fillStyle = obs.color;
+ctx.fillRect(x, yt, w, h);
 
-    // Яркий верхний торец
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(x, yt, w, 3);
+// Яркий верхний торец
+ctx.fillStyle = '#ffffff';
+ctx.fillRect(x, yt, w, 3);
 
-    ctx.shadowBlur = 0;
-  });
+ctx.shadowBlur = 0;
+});
 }
 
 // ────────────────────────────────────────────────────────
 function drawParticles() {
-  particles.forEach(p => {
-    ctx.globalAlpha = p.life;
-    ctx.fillStyle   = p.color;
-    ctx.shadowColor = p.color;
-    ctx.shadowBlur  = 6;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
-  ctx.shadowBlur  = 0;
+particles.forEach(p => {
+ctx.globalAlpha = p.life;
+ctx.fillStyle = p.color;
+ctx.shadowColor = p.color;
+ctx.shadowBlur = 6;
+ctx.beginPath();
+ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
+ctx.fill();
+});
+ctx.globalAlpha = 1;
+ctx.shadowBlur = 0;
 }
 
 // ═══════════════════════════════════════════════════════
-//  УПРАВЛЕНИЕ
+// УПРАВЛЕНИЕ
 // ═══════════════════════════════════════════════════════
 function handleInput(e) {
-  if (e.type === 'touchstart') e.preventDefault();
-  initAudio();
+if (e.type === 'touchstart') e.preventDefault();
+initAudio();
 
-  const startEl = document.getElementById('startScreen');
-  if (startEl && startEl.style.display !== 'none') return; // кнопка сама обработает
+const startEl = document.getElementById('startScreen');
+if (startEl && startEl.style.display !== 'none') return; // кнопка сама обработает
 
-  if (gameState === 'play') doJump();
+if (gameState === 'play') doJump();
 }
 
-canvas.addEventListener('click',      handleInput);
+canvas.addEventListener('click', handleInput);
 canvas.addEventListener('touchstart', handleInput, { passive: false });
 
 document.addEventListener('keydown', e => {
-  if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
-  e.preventDefault();
-  initAudio();
-  const startEl = document.getElementById('startScreen');
-  if (startEl && startEl.style.display !== 'none') return;
-  if (gameState === 'play') doJump();
+if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
+e.preventDefault();
+initAudio();
+const startEl = document.getElementById('startScreen');
+if (startEl && startEl.style.display !== 'none') return;
+if (gameState === 'play') doJump();
 });
 
 // ---- Кнопки ----
 document.getElementById('startBtn').addEventListener('click', e => {
-  e.stopPropagation();
-  initAudio();
-  document.getElementById('startScreen').style.display = 'none';
-  initGame();
+e.stopPropagation();
+initAudio();
+document.getElementById('startScreen').style.display = 'none';
+initGame();
 });
 document.getElementById('startBtn').addEventListener('touchend', e => {
-  e.preventDefault(); e.stopPropagation();
-  initAudio();
-  document.getElementById('startScreen').style.display = 'none';
-  initGame();
+e.preventDefault(); e.stopPropagation();
+initAudio();
+document.getElementById('startScreen').style.display = 'none';
+initGame();
 });
 
 document.getElementById('restartBtn').addEventListener('click', e => {
-  e.stopPropagation();
-  initAudio();
-  initGame();
+e.stopPropagation();
+initAudio();
+initGame();
 });
 document.getElementById('restartBtn').addEventListener('touchend', e => {
-  e.preventDefault(); e.stopPropagation();
-  initAudio();
-  initGame();
+e.preventDefault(); e.stopPropagation();
+initAudio();
+initGame();
 });
 
 // ═══════════════════════════════════════════════════════
-//  СТАРТ
+// СТАРТ
 // ═══════════════════════════════════════════════════════
 resize();
 generateFloorTiles();
 
 // Первичное положение шарика (для стартового экрана)
-ball.y        = GROUND_Y - BALL_R;
-ball.vy       = 0;
+ball.y = GROUND_Y - BALL_R;
+ball.vy = 0;
 ball.onGround = true;
-gameState     = 'idle';
+gameState = 'idle';
 
 // Запускаем рендер сразу — чтобы был виден превью
 rafId = requestAnimationFrame(function previewLoop(ts) {
-  if (gameState !== 'idle') return; // передаём управление initGame
-  draw(ts);
-  rafId = requestAnimationFrame(previewLoop);
+if (gameState !== 'idle') return; // передаём управление initGame
+draw(ts);
+rafId = requestAnimationFrame(previewLoop);
 });
 </script>
 </body>
